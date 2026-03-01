@@ -1,0 +1,25 @@
+{
+	"name": "@flarestack/api",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler dev",
+		"build": "wrangler deploy --dry-run --outdir=dist",
+		"check": "tsc --noEmit",
+		"lint": "biome check .",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@clerk/backend": "^2.33.0",
+		"@hono/clerk-auth": "^3.1.0",
+		"@flarestack/shared": "workspace:*",
+		"hono": "^4.7.0"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.0",
+		"@cloudflare/workers-types": "^4.20250214.0",
+		"vitest": "~3.0.0",
+		"wrangler": "^4.0.0"
+	}
+}
