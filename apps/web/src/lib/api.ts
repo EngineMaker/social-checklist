@@ -39,11 +39,14 @@ export interface ListChecklistsResponse {
 export async function listChecklists(
 	category?: string,
 ): Promise<ListChecklistsResponse> {
+	const url = getApiUrl();
+	console.log("[api] listChecklists url:", url);
 	const params = new URLSearchParams();
 	if (category) params.set("category", category);
-	const res = await fetch(`${getApiUrl()}/checklists?${params.toString()}`, {
+	const res = await fetch(`${url}/checklists?${params.toString()}`, {
 		cache: "no-store",
 	});
+	console.log("[api] listChecklists status:", res.status);
 	if (!res.ok) throw new Error("Failed to fetch checklists");
 	return res.json();
 }
