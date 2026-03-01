@@ -1,0 +1,44 @@
+name: Feature Request
+description: Propose a new feature or enhancement
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What do you want to implement?
+      placeholder: Describe the feature clearly and concisely.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this feature needed?
+      placeholder: What problem does it solve? What use case does it support?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: packages
+    attributes:
+      label: Affected packages
+      description: Which packages will this feature touch?
+      options:
+        - label: "api (`apps/api`)"
+        - label: "web (`apps/web`)"
+        - label: "shared (`packages/shared`)"
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: How do we know this is done?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Tests pass
+    validations:
+      required: true
