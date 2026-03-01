@@ -6,7 +6,10 @@ import {
 	UpdateChecklistItemSchema,
 	UpdateChecklistSchema,
 } from "@social-checklist/shared";
+import { and, asc, count, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { getDb } from "../db";
+import { checklistItems, checklists as checklistsTable } from "../db/schema";
 import type { Bindings } from "../index";
 import { requireAuth } from "../middleware/auth";
 
@@ -25,10 +28,12 @@ async function getChecklistOwner(
 	db: D1Database,
 	id: string,
 ): Promise<{ found: boolean; userId: string | null }> {
-	const row = await db
-		.prepare("SELECT user_id FROM checklists WHERE id = ?")
-		.bind(id)
-		.first<{ user_id: string | null }>();
+	const drizzle = getDb(db);
+	const row = await drizzle
+		.select({ user_id: checklistsTable.user_id })
+		.from(checklistsTable)
+		.where(eq(checklistsTable.id, id))
+		.get();
 	if (!row) return { found: false, userId: null };
 	return { found: true, userId: row.user_id };
 }
@@ -45,13 +50,18 @@ checklists.post("/", requireAuth, async (c) => {
 	const auth = getAuth(c);
 	const userId = auth?.userId;
 
-	const result = await c.env.DB.prepare(
-		`INSERT INTO checklists (title, description, category, user_id, is_public)
-     VALUES (?, ?, ?, ?, ?)
-     RETURNING *`,
-	)
-		.bind(title, description ?? null, category, userId, is_public)
-		.first();
+	const db = getDb(c.env.DB);
+	const result = await db
+		.insert(checklistsTable)
+		.values({
+			title,
+			description: description ?? null,
+			category,
+			user_id: userId ?? null,
+			is_public,
+		})
+		.returning()
+		.get();
 
 	return c.json(result, 201);
 });
@@ -66,31 +76,32 @@ checklists.get("/", async (c) => {
 
 	const { category, limit, offset } = parsed.data;
 
-	const conditions: string[] = ["is_public = 1"];
-	const binds: unknown[] = [];
-
+	const conditions = [eq(checklistsTable.is_public, 1)];
 	if (category) {
-		conditions.push("category = ?");
-		binds.push(category);
+		conditions.push(eq(checklistsTable.category, category));
 	}
+	const where = and(...conditions);
 
-	const where = `WHERE ${conditions.join(" AND ")}`;
+	const db = getDb(c.env.DB);
 
-	const countRow = await c.env.DB.prepare(
-		`SELECT COUNT(*) as total FROM checklists ${where}`,
-	)
-		.bind(...binds)
-		.first<{ total: number }>();
+	const countResult = await db
+		.select({ total: count() })
+		.from(checklistsTable)
+		.where(where)
+		.get();
 
-	const rows = await c.env.DB.prepare(
-		`SELECT * FROM checklists ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-	)
-		.bind(...binds, limit, offset)
+	const rows = await db
+		.select()
+		.from(checklistsTable)
+		.where(where)
+		.orderBy(desc(checklistsTable.created_at))
+		.limit(limit)
+		.offset(offset)
 		.all();
 
 	return c.json({
-		data: rows.results,
-		total: countRow?.total ?? 0,
+		data: rows,
+		total: countResult?.total ?? 0,
 		limit,
 		offset,
 	});
@@ -99,23 +110,26 @@ checklists.get("/", async (c) => {
 // GET /checklists/:id — Get checklist with items
 checklists.get("/:id", async (c) => {
 	const id = c.req.param("id");
-	const checklist = await c.env.DB.prepare(
-		"SELECT * FROM checklists WHERE id = ?",
-	)
-		.bind(id)
-		.first();
+	const db = getDb(c.env.DB);
+
+	const checklist = await db
+		.select()
+		.from(checklistsTable)
+		.where(eq(checklistsTable.id, id))
+		.get();
 
 	if (!checklist) {
 		return c.json({ error: "Checklist not found" }, 404);
 	}
 
-	const items = await c.env.DB.prepare(
-		"SELECT * FROM checklist_items WHERE checklist_id = ? ORDER BY sort_order ASC, created_at ASC",
-	)
-		.bind(id)
+	const items = await db
+		.select()
+		.from(checklistItems)
+		.where(eq(checklistItems.checklist_id, id))
+		.orderBy(asc(checklistItems.sort_order), asc(checklistItems.created_at))
 		.all();
 
-	return c.json({ ...checklist, items: items.results });
+	return c.json({ ...checklist, items });
 });
 
 // PATCH /checklists/:id — Update (owner only)
@@ -137,21 +151,13 @@ checklists.patch("/:id", requireAuth, async (c) => {
 		return c.json({ error: parsed.error.flatten() }, 400);
 	}
 
-	const fields = parsed.data;
-	const setClauses: string[] = [];
-	const binds: unknown[] = [];
-
-	for (const [key, value] of Object.entries(fields)) {
-		setClauses.push(`${key} = ?`);
-		binds.push(value ?? null);
-	}
-	setClauses.push("updated_at = datetime('now')");
-
-	const result = await c.env.DB.prepare(
-		`UPDATE checklists SET ${setClauses.join(", ")} WHERE id = ? RETURNING *`,
-	)
-		.bind(...binds, id)
-		.first();
+	const db = getDb(c.env.DB);
+	const result = await db
+		.update(checklistsTable)
+		.set({ ...parsed.data, updated_at: sql`datetime('now')` })
+		.where(eq(checklistsTable.id, id))
+		.returning()
+		.get();
 
 	return c.json(result);
 });
@@ -177,13 +183,17 @@ checklists.post("/:id/items", requireAuth, async (c) => {
 
 	const { title, product_url, sort_order } = parsed.data;
 
-	const result = await c.env.DB.prepare(
-		`INSERT INTO checklist_items (checklist_id, title, product_url, sort_order)
-     VALUES (?, ?, ?, ?)
-     RETURNING *`,
-	)
-		.bind(checklistId, title, product_url ?? null, sort_order)
-		.first();
+	const db = getDb(c.env.DB);
+	const result = await db
+		.insert(checklistItems)
+		.values({
+			checklist_id: checklistId,
+			title,
+			product_url: product_url ?? null,
+			sort_order,
+		})
+		.returning()
+		.get();
 
 	return c.json(result, 201);
 });
@@ -208,21 +218,18 @@ checklists.patch("/:id/items/:itemId", requireAuth, async (c) => {
 		return c.json({ error: parsed.error.flatten() }, 400);
 	}
 
-	const fields = parsed.data;
-	const setClauses: string[] = [];
-	const binds: unknown[] = [];
-
-	for (const [key, value] of Object.entries(fields)) {
-		setClauses.push(`${key} = ?`);
-		binds.push(value ?? null);
-	}
-	setClauses.push("updated_at = datetime('now')");
-
-	const result = await c.env.DB.prepare(
-		`UPDATE checklist_items SET ${setClauses.join(", ")} WHERE id = ? AND checklist_id = ? RETURNING *`,
-	)
-		.bind(...binds, itemId, checklistId)
-		.first();
+	const db = getDb(c.env.DB);
+	const result = await db
+		.update(checklistItems)
+		.set({ ...parsed.data, updated_at: sql`datetime('now')` })
+		.where(
+			and(
+				eq(checklistItems.id, itemId),
+				eq(checklistItems.checklist_id, checklistId),
+			),
+		)
+		.returning()
+		.get();
 
 	if (!result) {
 		return c.json({ error: "Item not found" }, 404);
@@ -244,11 +251,17 @@ checklists.delete("/:id/items/:itemId", requireAuth, async (c) => {
 		return c.json({ error: "Forbidden" }, 403);
 	}
 
-	const result = await c.env.DB.prepare(
-		"DELETE FROM checklist_items WHERE id = ? AND checklist_id = ? RETURNING id",
-	)
-		.bind(itemId, checklistId)
-		.first();
+	const db = getDb(c.env.DB);
+	const result = await db
+		.delete(checklistItems)
+		.where(
+			and(
+				eq(checklistItems.id, itemId),
+				eq(checklistItems.checklist_id, checklistId),
+			),
+		)
+		.returning({ id: checklistItems.id })
+		.get();
 
 	if (!result) {
 		return c.json({ error: "Item not found" }, 404);
@@ -262,56 +275,62 @@ checklists.post("/:id/fork", requireAuth, async (c) => {
 	const auth = getAuth(c);
 	const userId = auth?.userId;
 
-	const source = await c.env.DB.prepare("SELECT * FROM checklists WHERE id = ?")
-		.bind(sourceId)
-		.first<{
-			id: string;
-			title: string;
-			description: string | null;
-			category: string;
-		}>();
+	const db = getDb(c.env.DB);
+
+	const source = await db
+		.select()
+		.from(checklistsTable)
+		.where(eq(checklistsTable.id, sourceId))
+		.get();
 
 	if (!source) {
 		return c.json({ error: "Checklist not found" }, 404);
 	}
 
-	const newChecklist = await c.env.DB.prepare(
-		`INSERT INTO checklists (title, description, category, user_id, is_public, forked_from)
-     VALUES (?, ?, ?, ?, 1, ?)
-     RETURNING *`,
-	)
-		.bind(source.title, source.description, source.category, userId, sourceId)
-		.first();
+	const newChecklist = await db
+		.insert(checklistsTable)
+		.values({
+			title: source.title,
+			description: source.description,
+			category: source.category,
+			user_id: userId ?? null,
+			is_public: 1,
+			forked_from: sourceId,
+		})
+		.returning()
+		.get();
 
-	if (!newChecklist) {
-		return c.json({ error: "Failed to create fork" }, 500);
-	}
+	const sourceItems = await db
+		.select({
+			title: checklistItems.title,
+			product_url: checklistItems.product_url,
+			sort_order: checklistItems.sort_order,
+		})
+		.from(checklistItems)
+		.where(eq(checklistItems.checklist_id, sourceId))
+		.orderBy(asc(checklistItems.sort_order))
+		.all();
 
-	const items = await c.env.DB.prepare(
-		"SELECT title, product_url, sort_order FROM checklist_items WHERE checklist_id = ? ORDER BY sort_order ASC",
-	)
-		.bind(sourceId)
-		.all<{ title: string; product_url: string | null; sort_order: number }>();
-
-	for (const item of items.results) {
-		await c.env.DB.prepare(
-			`INSERT INTO checklist_items (checklist_id, title, product_url, sort_order)
-       VALUES (?, ?, ?, ?)`,
-		)
-			.bind(
-				(newChecklist as Record<string, unknown>).id,
-				item.title,
-				item.product_url,
-				item.sort_order,
+	if (sourceItems.length > 0) {
+		await db
+			.insert(checklistItems)
+			.values(
+				sourceItems.map((item) => ({
+					checklist_id: newChecklist.id,
+					title: item.title,
+					product_url: item.product_url,
+					sort_order: item.sort_order,
+				})),
 			)
 			.run();
 	}
 
-	const forkedItems = await c.env.DB.prepare(
-		"SELECT * FROM checklist_items WHERE checklist_id = ? ORDER BY sort_order ASC",
-	)
-		.bind((newChecklist as Record<string, unknown>).id)
+	const forkedItems = await db
+		.select()
+		.from(checklistItems)
+		.where(eq(checklistItems.checklist_id, newChecklist.id))
+		.orderBy(asc(checklistItems.sort_order))
 		.all();
 
-	return c.json({ ...newChecklist, items: forkedItems.results }, 201);
+	return c.json({ ...newChecklist, items: forkedItems }, 201);
 });
