@@ -8,6 +8,7 @@
 		"binding": "ASSETS"
 	},
 	"vars": {
-		"NEXT_PUBLIC_API_URL": "https://social-checklist-api.mktoho.workers.dev"
+		"NEXT_PUBLIC_API_URL": "https://social-checklist-api.mktoho.workers.dev",
+		"NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_bWFueS1qYXdmaXNoLTc4LmNsZXJrLmFjY291bnRzLmRldiQ"
 	}
 }
