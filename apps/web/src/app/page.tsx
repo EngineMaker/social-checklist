@@ -1,6 +1,6 @@
 import { ChecklistCategory } from "@social-checklist/shared";
 import Link from "next/link";
-import { listChecklists } from "../lib/api";
+import { type Checklist, listChecklists } from "../lib/api";
 
 export default async function Home({
 	searchParams,
@@ -10,7 +10,13 @@ export default async function Home({
 	const { category } = await searchParams;
 	const categories = ChecklistCategory.options;
 
-	const { data: checklists } = await listChecklists(category);
+	let checklists: Checklist[] = [];
+	try {
+		const res = await listChecklists(category);
+		checklists = res.data;
+	} catch (e) {
+		console.error("Failed to fetch checklists:", e);
+	}
 
 	return (
 		<main>

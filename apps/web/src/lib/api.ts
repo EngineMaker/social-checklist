@@ -1,4 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+function getApiUrl() {
+	return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+}
 
 export interface Checklist {
 	id: string;
@@ -39,7 +41,7 @@ export async function listChecklists(
 ): Promise<ListChecklistsResponse> {
 	const params = new URLSearchParams();
 	if (category) params.set("category", category);
-	const res = await fetch(`${API_URL}/checklists?${params.toString()}`, {
+	const res = await fetch(`${getApiUrl()}/checklists?${params.toString()}`, {
 		cache: "no-store",
 	});
 	if (!res.ok) throw new Error("Failed to fetch checklists");
@@ -49,7 +51,7 @@ export async function listChecklists(
 export async function getChecklist(
 	id: string,
 ): Promise<ChecklistWithItems | null> {
-	const res = await fetch(`${API_URL}/checklists/${id}`, {
+	const res = await fetch(`${getApiUrl()}/checklists/${id}`, {
 		cache: "no-store",
 	});
 	if (res.status === 404) return null;
@@ -61,7 +63,7 @@ export async function createChecklist(
 	data: { title: string; description?: string; category: string },
 	token: string,
 ): Promise<Checklist> {
-	const res = await fetch(`${API_URL}/checklists`, {
+	const res = await fetch(`${getApiUrl()}/checklists`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -78,7 +80,7 @@ export async function addItem(
 	data: { title: string },
 	token: string,
 ): Promise<ChecklistItem> {
-	const res = await fetch(`${API_URL}/checklists/${checklistId}/items`, {
+	const res = await fetch(`${getApiUrl()}/checklists/${checklistId}/items`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -96,7 +98,7 @@ export async function deleteItem(
 	token: string,
 ): Promise<void> {
 	const res = await fetch(
-		`${API_URL}/checklists/${checklistId}/items/${itemId}`,
+		`${getApiUrl()}/checklists/${checklistId}/items/${itemId}`,
 		{
 			method: "DELETE",
 			headers: { Authorization: `Bearer ${token}` },
