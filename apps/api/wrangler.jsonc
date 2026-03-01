@@ -6,8 +6,7 @@
 		{
 			"binding": "DB",
 			"database_name": "social-checklist",
-			// Replace with your D1 database ID: wrangler d1 create social-checklist
-			"database_id": "YOUR_D1_DATABASE_ID"
+			"database_id": "8854c221-e9e5-42c5-bc4a-e0afee7ccddd"
 		}
 	]
 }
