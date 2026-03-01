@@ -2,6 +2,25 @@ function getApiUrl() {
 	return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
 }
 
+/**
+ * Server-side fetch via Cloudflare Service Binding.
+ * Falls back to regular fetch for local dev or client-side.
+ */
+async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+	if (typeof window === "undefined") {
+		try {
+			const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+			const { env } = await getCloudflareContext({ async: true });
+			if (env.API) {
+				return env.API.fetch(new Request(`https://api.internal${path}`, init));
+			}
+		} catch {
+			// Fall through to regular fetch (local dev)
+		}
+	}
+	return fetch(`${getApiUrl()}${path}`, init);
+}
+
 export interface Checklist {
 	id: string;
 	title: string;
@@ -39,14 +58,12 @@ export interface ListChecklistsResponse {
 export async function listChecklists(
 	category?: string,
 ): Promise<ListChecklistsResponse> {
-	const url = getApiUrl();
-	console.log("[api] listChecklists url:", url);
 	const params = new URLSearchParams();
 	if (category) params.set("category", category);
-	const res = await fetch(`${url}/checklists?${params.toString()}`, {
+	const qs = params.toString();
+	const res = await apiFetch(`/checklists${qs ? `?${qs}` : ""}`, {
 		cache: "no-store",
 	});
-	console.log("[api] listChecklists status:", res.status);
 	if (!res.ok) throw new Error("Failed to fetch checklists");
 	return res.json();
 }
@@ -54,7 +71,7 @@ export async function listChecklists(
 export async function getChecklist(
 	id: string,
 ): Promise<ChecklistWithItems | null> {
-	const res = await fetch(`${getApiUrl()}/checklists/${id}`, {
+	const res = await apiFetch(`/checklists/${id}`, {
 		cache: "no-store",
 	});
 	if (res.status === 404) return null;
