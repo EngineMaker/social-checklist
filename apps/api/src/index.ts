@@ -15,7 +15,10 @@ export function createApp() {
 
 	app.use(
 		cors({
-			origin: ["http://localhost:3000"],
+			origin: [
+				"http://localhost:3000",
+				"https://social-checklist-web.mktoho.workers.dev",
+			],
 			allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
 			allowHeaders: ["Content-Type", "Authorization"],
 		}),
