@@ -30,7 +30,7 @@ cp apps/web/.env.local.example apps/web/.env.local
 4. Apply local D1 migrations
 
 ```bash
-cd apps/api && bun wrangler d1 migrations apply flarestack --local
+cd apps/api && bun wrangler d1 migrations apply social-checklist --local
 ```
 
 5. Start the development server

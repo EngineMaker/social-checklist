@@ -1,5 +1,5 @@
 {
-	"name": "@flarestack/api",
+	"name": "@social-checklist/api",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
@@ -13,7 +13,7 @@
 	"dependencies": {
 		"@clerk/backend": "^2.33.0",
 		"@hono/clerk-auth": "^3.1.0",
-		"@flarestack/shared": "workspace:*",
+		"@social-checklist/shared": "workspace:*",
 		"hono": "^4.7.0"
 	},
 	"devDependencies": {

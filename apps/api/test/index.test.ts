@@ -18,7 +18,7 @@ describe("API root", () => {
 		expect(res.status).toBe(200);
 		const body = (await res.json()) as { name: string; status: string };
 		expect(body).toEqual({
-			name: "Flarestack API",
+			name: "Social Checklist API",
 			status: "ok",
 		});
 	});

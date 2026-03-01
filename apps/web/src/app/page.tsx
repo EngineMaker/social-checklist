@@ -1,30 +1,19 @@
-import { ItemStatus } from "@flarestack/shared";
+import { ChecklistCategory } from "@social-checklist/shared";
 
 export default function Home() {
-	const statuses = ItemStatus.options;
+	const categories = ChecklistCategory.options;
 
 	return (
 		<main>
-			<h1>Flarestack</h1>
-			<p>Full-stack Cloudflare application template</p>
+			<h1>Social Checklist</h1>
+			<p>Create, share, and fork checklists for any event</p>
 
 			<section>
-				<h2>Item Statuses</h2>
+				<h2>Categories</h2>
 				<ul>
-					{statuses.map((status) => (
-						<li key={status}>{status}</li>
+					{categories.map((category) => (
+						<li key={category}>{category}</li>
 					))}
-				</ul>
-			</section>
-
-			<section>
-				<h2>Tech Stack</h2>
-				<ul>
-					<li>Turborepo</li>
-					<li>Hono API</li>
-					<li>Next.js</li>
-					<li>Cloudflare D1</li>
-					<li>Clerk Auth</li>
 				</ul>
 			</section>
 		</main>

@@ -4,8 +4,8 @@ import { Header } from "./components/Header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Flarestack App",
-	description: "Full-stack Cloudflare application",
+	title: "Social Checklist",
+	description: "Create, share, and fork checklists for any event",
 };
 
 export default function RootLayout({

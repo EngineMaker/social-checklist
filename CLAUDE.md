@@ -1,8 +1,8 @@
-# Flarestack
+# Social Checklist
 
 ## Overview
 
-Full-stack Cloudflare application template with Turborepo monorepo.
+Create, share, and fork checklists for any event — camping, wedding, startup, moving, travel, and more.
 
 ## Tech Stack
 
@@ -18,7 +18,7 @@ Full-stack Cloudflare application template with Turborepo monorepo.
 ## Directory Structure
 
 ```
-flarestack/
+social-checklist/
 ├── apps/
 │   ├── api/          # Hono API (Cloudflare Workers)
 │   │   ├── src/
@@ -45,13 +45,24 @@ flarestack/
 
 - `GET /` — API info
 - `GET /health` — D1 health check
-- `POST /items` — Create item (auth required)
-- `GET /items` — List items (public)
-- `GET /items/:id` — Get item by ID (public)
-- `PATCH /items/:id` — Update item (auth required)
+- `POST /checklists` — Create checklist (auth required)
+- `GET /checklists` — List public checklists (with category filter & pagination)
+- `GET /checklists/:id` — Get checklist with items (public)
+- `PATCH /checklists/:id` — Update checklist (owner only)
+- `POST /checklists/:id/items` — Add item (owner only)
+- `PATCH /checklists/:id/items/:itemId` — Update item (owner only)
+- `DELETE /checklists/:id/items/:itemId` — Delete item (owner only)
+- `POST /checklists/:id/fork` — Fork checklist (auth required)
 
 ## Auth Pattern
 
-- API: `@hono/clerk-auth` — POST/PATCH require auth, GET is public
+- API: `@hono/clerk-auth` — POST/PATCH/DELETE require auth, GET is public
+- Ownership: PATCH/DELETE on checklists and items require owner match (403 otherwise)
 - Web: `@clerk/nextjs` — ClerkProvider, middleware, Header (SignIn/UserButton)
 - Tests: `vi.mock` for `@hono/clerk-auth`, `createApp()` factory pattern
+
+## Data Model
+
+- **checklists**: title, description, category, user_id, is_public, forked_from
+- **checklist_items**: checklist_id (FK), title, product_url, sort_order, is_checked
+- Categories: camping, wedding, startup, moving, travel, other

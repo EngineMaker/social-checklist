@@ -1,8 +1,8 @@
 import { clerkMiddleware } from "@hono/clerk-auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { checklists } from "./routes/checklists";
 import { health } from "./routes/health";
-import { items } from "./routes/items";
 
 export type Bindings = {
 	DB: D1Database;
@@ -16,7 +16,7 @@ export function createApp() {
 	app.use(
 		cors({
 			origin: ["http://localhost:3000"],
-			allowMethods: ["GET", "POST", "PATCH", "OPTIONS"],
+			allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
 			allowHeaders: ["Content-Type", "Authorization"],
 		}),
 	);
@@ -24,11 +24,11 @@ export function createApp() {
 	app.use(clerkMiddleware());
 
 	app.get("/", (c) => {
-		return c.json({ name: "Flarestack API", status: "ok" });
+		return c.json({ name: "Social Checklist API", status: "ok" });
 	});
 
 	app.route("/health", health);
-	app.route("/items", items);
+	app.route("/checklists", checklists);
 
 	return app;
 }

@@ -11,12 +11,12 @@
       },
     },
     "apps/api": {
-      "name": "@flarestack/api",
+      "name": "@social-checklist/api",
       "version": "0.0.0",
       "dependencies": {
         "@clerk/backend": "^2.33.0",
-        "@flarestack/shared": "workspace:*",
         "@hono/clerk-auth": "^3.1.0",
+        "@social-checklist/shared": "workspace:*",
         "hono": "^4.7.0",
       },
       "devDependencies": {
@@ -27,11 +27,11 @@
       },
     },
     "apps/web": {
-      "name": "@flarestack/web",
+      "name": "@social-checklist/web",
       "version": "0.0.0",
       "dependencies": {
         "@clerk/nextjs": "^6.39.0",
-        "@flarestack/shared": "workspace:*",
+        "@social-checklist/shared": "workspace:*",
         "next": "^15.3.0",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
@@ -46,7 +46,7 @@
       },
     },
     "packages/shared": {
-      "name": "@flarestack/shared",
+      "name": "@social-checklist/shared",
       "version": "0.0.0",
       "dependencies": {
         "zod": "^3.24.0",
@@ -275,12 +275,6 @@
     "@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.27.3", "", { "os": "win32", "cpu": "ia32" }, "sha512-QLKSFeXNS8+tHW7tZpMtjlNb7HKau0QDpwm49u0vUp9y1WOF+PEzkU84y9GqYaAVW8aH8f3GcBck26jh54cX4Q=="],
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.27.3", "", { "os": "win32", "cpu": "x64" }, "sha512-4uJGhsxuptu3OcpVAzli+/gWusVGwZZHTlS63hh++ehExkVT8SgiEf7/uC/PclrPPkLhZqGgCTjd0VWLo6xMqA=="],
-
-    "@flarestack/api": ["@flarestack/api@workspace:apps/api"],
-
-    "@flarestack/shared": ["@flarestack/shared@workspace:packages/shared"],
-
-    "@flarestack/web": ["@flarestack/web@workspace:apps/web"],
 
     "@hono/clerk-auth": ["@hono/clerk-auth@3.1.0", "", { "dependencies": { "@clerk/backend": "^2.29.2", "@clerk/shared": "^3.42.0" }, "peerDependencies": { "hono": ">=3.0.0" } }, "sha512-kkC6WiCaRwud7sQGSU0zgJJEI1CHPsnM0oK3jmVtozQn7rHMeqITFn4SU+ehnrXdHJBryYJsGheMJwQuhusDgw=="],
 
@@ -539,6 +533,12 @@
     "@smithy/util-waiter": ["@smithy/util-waiter@4.2.10", "", { "dependencies": { "@smithy/abort-controller": "^4.2.10", "@smithy/types": "^4.13.0", "tslib": "^2.6.2" } }, "sha512-4eTWph/Lkg1wZEDAyObwme0kmhEb7J/JjibY2znJdrYRgKbKqB7YoEhhJVJ4R1g/SYih4zuwX7LpJaM8RsnTVg=="],
 
     "@smithy/uuid": ["@smithy/uuid@1.1.1", "", { "dependencies": { "tslib": "^2.6.2" } }, "sha512-dSfDCeihDmZlV2oyr0yWPTUfh07suS+R5OB+FZGiv/hHyK3hrFBW5rR1UYjfa57vBsrP9lciFkRPzebaV1Qujw=="],
+
+    "@social-checklist/api": ["@social-checklist/api@workspace:apps/api"],
+
+    "@social-checklist/shared": ["@social-checklist/shared@workspace:packages/shared"],
+
+    "@social-checklist/web": ["@social-checklist/web@workspace:apps/web"],
 
     "@speed-highlight/core": ["@speed-highlight/core@1.2.14", "", {}, "sha512-G4ewlBNhUtlLvrJTb88d2mdy2KRijzs4UhnlrOSRT4bmjh/IqNElZa3zkrZ+TC47TwtlDWzVLFADljF1Ijp5hA=="],
 

@@ -1,12 +1,12 @@
 {
-	"name": "flarestack-api",
+	"name": "social-checklist-api",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-04-01",
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "flarestack",
-			// Replace with your D1 database ID: wrangler d1 create flarestack
+			"database_name": "social-checklist",
+			// Replace with your D1 database ID: wrangler d1 create social-checklist
 			"database_id": "YOUR_D1_DATABASE_ID"
 		}
 	]

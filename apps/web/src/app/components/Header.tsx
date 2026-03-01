@@ -13,7 +13,7 @@ export function Header() {
 				borderBottom: "1px solid #eee",
 			}}
 		>
-			<h1 style={{ margin: 0, fontSize: "1.2rem" }}>Flarestack</h1>
+			<h1 style={{ margin: 0, fontSize: "1.2rem" }}>Social Checklist</h1>
 			<nav>
 				<SignedOut>
 					<SignInButton mode="modal">

@@ -24,6 +24,18 @@
 			}
 		}
 	},
+	"overrides": [
+		{
+			"includes": ["**/test/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					}
+				}
+			}
+		}
+	],
 	"formatter": {
 		"indentStyle": "tab"
 	}

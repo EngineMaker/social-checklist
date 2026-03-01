@@ -1,8 +1,8 @@
-# Flarestack
+# Social Checklist
 
-Full-stack Cloudflare application template powered by **Turborepo**, **Hono**, **Next.js**, **D1**, and **Clerk**.
+Create, share, and fork checklists for any event — camping, wedding, startup, moving, travel, and more.
 
-Click **"Use this template"** on GitHub to create your own project instantly.
+Built with **Turborepo**, **Hono**, **Next.js**, **Cloudflare D1**, and **Clerk**.
 
 ## Tech Stack
 
@@ -23,21 +23,18 @@ Click **"Use this template"** on GitHub to create your own project instantly.
 - [Cloudflare account](https://dash.cloudflare.com/)
 - [Clerk account](https://clerk.com/)
 
-### 1. Create from template
+### 1. Clone & install
 
 ```bash
-# Click "Use this template" on GitHub, then clone your repo
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/EngineMaker/social-checklist.git
+cd social-checklist
 bun install
 ```
 
 ### 2. Set up Cloudflare D1
 
 ```bash
-# Create a D1 database
-bun wrangler d1 create <your-app-name>
-
+bun wrangler d1 create social-checklist
 # Copy the database_id from the output and update apps/api/wrangler.jsonc
 ```
 
@@ -56,7 +53,7 @@ cp apps/web/.env.local.example apps/web/.env.local
 
 ```bash
 cd apps/api
-bun wrangler d1 migrations apply <your-app-name> --local
+bun wrangler d1 migrations apply social-checklist --local
 ```
 
 ### 5. Start development
@@ -74,28 +71,32 @@ bun dev
 |--------|------|------|-------------|
 | `GET` | `/` | Public | API info |
 | `GET` | `/health` | Public | D1 health check |
-| `POST` | `/items` | Required | Create item |
-| `GET` | `/items` | Public | List items (with filtering & pagination) |
-| `GET` | `/items/:id` | Public | Get item by ID |
-| `PATCH` | `/items/:id` | Required | Update item |
+| `POST` | `/checklists` | Required | Create checklist |
+| `GET` | `/checklists` | Public | List public checklists |
+| `GET` | `/checklists/:id` | Public | Get checklist with items |
+| `PATCH` | `/checklists/:id` | Owner | Update checklist |
+| `POST` | `/checklists/:id/items` | Owner | Add item |
+| `PATCH` | `/checklists/:id/items/:itemId` | Owner | Update item |
+| `DELETE` | `/checklists/:id/items/:itemId` | Owner | Delete item |
+| `POST` | `/checklists/:id/fork` | Required | Fork (copy) checklist |
 
-### Query Parameters (GET /items)
+### Query Parameters (GET /checklists)
 
-- `status` — Filter by status (`open`, `in_progress`, `done`, `closed`)
+- `category` — Filter by category (`camping`, `wedding`, `startup`, `moving`, `travel`, `other`)
 - `limit` — Items per page (default: 20, max: 100)
 - `offset` — Pagination offset (default: 0)
 
 ## Project Structure
 
 ```
-flarestack/
+social-checklist/
 ├── apps/
 │   ├── api/              # Hono API (Cloudflare Workers)
 │   │   ├── src/
-│   │   │   ├── index.ts          # App entry point
-│   │   │   ├── routes/items.ts   # CRUD routes
-│   │   │   ├── routes/health.ts  # Health check
-│   │   │   └── middleware/auth.ts # Auth middleware
+│   │   │   ├── index.ts              # App entry point
+│   │   │   ├── routes/checklists.ts  # CRUD + items + fork routes
+│   │   │   ├── routes/health.ts      # Health check
+│   │   │   └── middleware/auth.ts    # Auth middleware
 │   │   ├── test/         # Vitest tests
 │   │   ├── migrations/   # D1 SQL migrations
 │   │   └── wrangler.jsonc
@@ -154,13 +155,6 @@ cd apps/web
 bun wrangler secret put CLERK_SECRET_KEY
 bun wrangler secret put NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ```
-
-## Customization
-
-1. **Rename the project**: Update `name` fields in `package.json`, `apps/*/package.json`, `packages/*/package.json`, and `wrangler.jsonc` files
-2. **Change the data model**: Edit `packages/shared/src/index.ts` (schemas), `apps/api/src/routes/items.ts` (API), and `apps/api/migrations/` (SQL)
-3. **Add CORS origins**: Update the `origin` array in `apps/api/src/index.ts`
-4. **Add new API routes**: Create files in `apps/api/src/routes/` and register in `apps/api/src/index.ts`
 
 ## License
 
