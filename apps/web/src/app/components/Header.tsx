@@ -13,13 +13,13 @@ export function Header() {
 				<SignedOut>
 					<SignInButton mode="modal">
 						<button type="button" className="btn-signin">
-							Sign In
+							ログイン
 						</button>
 					</SignInButton>
 				</SignedOut>
 				<SignedIn>
 					<Link href="/checklists/new" className="btn btn-primary">
-						+ New
+						+ 新規作成
 					</Link>
 					<UserButton />
 				</SignedIn>

@@ -64,7 +64,7 @@ export async function listChecklists(
 	const res = await apiFetch(`/checklists${qs ? `?${qs}` : ""}`, {
 		cache: "no-store",
 	});
-	if (!res.ok) throw new Error("Failed to fetch checklists");
+	if (!res.ok) throw new Error("チェックリストの取得に失敗しました");
 	return res.json();
 }
 
@@ -75,7 +75,7 @@ export async function getChecklist(
 		cache: "no-store",
 	});
 	if (res.status === 404) return null;
-	if (!res.ok) throw new Error("Failed to fetch checklist");
+	if (!res.ok) throw new Error("チェックリストの取得に失敗しました");
 	return res.json();
 }
 
@@ -91,7 +91,7 @@ export async function createChecklist(
 		},
 		body: JSON.stringify(data),
 	});
-	if (!res.ok) throw new Error("Failed to create checklist");
+	if (!res.ok) throw new Error("チェックリストの作成に失敗しました");
 	return res.json();
 }
 
@@ -108,7 +108,7 @@ export async function addItem(
 		},
 		body: JSON.stringify(data),
 	});
-	if (!res.ok) throw new Error("Failed to add item");
+	if (!res.ok) throw new Error("アイテムの追加に失敗しました");
 	return res.json();
 }
 
@@ -124,5 +124,5 @@ export async function deleteItem(
 			headers: { Authorization: `Bearer ${token}` },
 		},
 	);
-	if (!res.ok) throw new Error("Failed to delete item");
+	if (!res.ok) throw new Error("アイテムの削除に失敗しました");
 }

@@ -22,13 +22,13 @@ export default async function Home({
 		<main>
 			<section className="hero">
 				<h1>Social Checklist</h1>
-				<p>Create, share, and fork checklists for any event</p>
+				<p>イベントのチェックリストを作成・共有・フォークしよう</p>
 			</section>
 
 			<ul className="category-filter">
 				<li>
 					<Link href="/" className={!category ? "active" : ""}>
-						All
+						すべて
 					</Link>
 				</li>
 				{categories.map((cat) => (
@@ -45,7 +45,7 @@ export default async function Home({
 
 			{checklists.length === 0 ? (
 				<div className="empty">
-					<p>No checklists yet. Be the first to create one!</p>
+					<p>チェックリストはまだありません。最初のひとつを作りましょう！</p>
 				</div>
 			) : (
 				<ul className="card-grid">
