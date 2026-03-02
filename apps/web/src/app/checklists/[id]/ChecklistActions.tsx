@@ -45,7 +45,7 @@ export function ChecklistActions({
 	return (
 		<div>
 			{initialItems.length === 0 && !isOwner && (
-				<p className="empty">No items yet.</p>
+				<p className="empty">アイテムはまだありません。</p>
 			)}
 
 			{initialItems.length > 0 && (
@@ -59,7 +59,7 @@ export function ChecklistActions({
 									className="btn btn-danger"
 									onClick={() => handleDelete(item.id)}
 								>
-									Delete
+									削除
 								</button>
 							)}
 						</li>
@@ -71,7 +71,7 @@ export function ChecklistActions({
 				<form onSubmit={handleAdd} className="add-item-form">
 					<input
 						type="text"
-						placeholder="Add an item..."
+						placeholder="アイテムを追加..."
 						value={newTitle}
 						onChange={(e) => setNewTitle(e.target.value)}
 						maxLength={200}
@@ -81,7 +81,7 @@ export function ChecklistActions({
 						className="btn btn-primary"
 						disabled={loading || !newTitle.trim()}
 					>
-						{loading ? "Adding..." : "Add"}
+						{loading ? "追加中..." : "追加"}
 					</button>
 				</form>
 			)}
@@ -94,7 +94,7 @@ export function ChecklistActions({
 						marginTop: "0.5rem",
 					}}
 				>
-					Start adding items to your checklist.
+					チェックリストにアイテムを追加しましょう。
 				</p>
 			)}
 		</div>

@@ -21,8 +21,8 @@ export function NewChecklistForm() {
 		return (
 			<main>
 				<div className="signin-prompt">
-					<h2>Sign in to create a checklist</h2>
-					<p>You need to be signed in to create a new checklist.</p>
+					<h2>チェックリストを作るにはログインが必要です</h2>
+					<p>ログインしてチェックリストを作成しましょう。</p>
 				</div>
 			</main>
 		);
@@ -43,7 +43,7 @@ export function NewChecklistForm() {
 			);
 			router.push(`/checklists/${checklist.id}`);
 		} catch {
-			setError("Failed to create checklist. Please try again.");
+			setError("作成に失敗しました。もう一度お試しください。");
 			setSubmitting(false);
 		}
 	}
@@ -51,11 +51,11 @@ export function NewChecklistForm() {
 	return (
 		<main>
 			<h1 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>
-				New Checklist
+				新しいチェックリスト
 			</h1>
 			<form onSubmit={handleSubmit} className="form">
 				<div className="form-group">
-					<label htmlFor="title">Title</label>
+					<label htmlFor="title">タイトル</label>
 					<input
 						id="title"
 						type="text"
@@ -63,23 +63,23 @@ export function NewChecklistForm() {
 						maxLength={200}
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						placeholder="e.g. Weekend Camping Essentials"
+						placeholder="例: 週末キャンプの持ち物"
 					/>
 				</div>
 
 				<div className="form-group">
-					<label htmlFor="description">Description (optional)</label>
+					<label htmlFor="description">説明（任意）</label>
 					<textarea
 						id="description"
 						maxLength={2000}
 						value={description}
 						onChange={(e) => setDescription(e.target.value)}
-						placeholder="What is this checklist for?"
+						placeholder="どんなチェックリストですか？"
 					/>
 				</div>
 
 				<div className="form-group">
-					<label htmlFor="category">Category</label>
+					<label htmlFor="category">カテゴリ</label>
 					<select
 						id="category"
 						value={category}
@@ -102,7 +102,7 @@ export function NewChecklistForm() {
 					className="btn btn-primary"
 					disabled={submitting || !title.trim()}
 				>
-					{submitting ? "Creating..." : "Create Checklist"}
+					{submitting ? "作成中..." : "チェックリストを作成"}
 				</button>
 			</form>
 		</main>

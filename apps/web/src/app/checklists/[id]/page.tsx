@@ -19,7 +19,7 @@ export default async function ChecklistDetailPage({
 	return (
 		<main>
 			<Link href="/" className="back-link">
-				&larr; Back to checklists
+				&larr; チェックリスト一覧に戻る
 			</Link>
 
 			<div className="detail-header">
@@ -28,7 +28,7 @@ export default async function ChecklistDetailPage({
 				{checklist.description && <p>{checklist.description}</p>}
 			</div>
 
-			<div className="section-label">Items</div>
+			<div className="section-label">アイテム</div>
 			<ChecklistActions
 				checklistId={checklist.id}
 				initialItems={checklist.items}

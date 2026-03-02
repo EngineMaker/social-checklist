@@ -4,8 +4,8 @@ import { Header } from "./components/Header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Social Checklist",
-	description: "Create, share, and fork checklists for any event",
+	title: "Social Checklist - みんなのチェックリスト",
+	description: "イベントのチェックリストを作成・共有・フォークしよう",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
 	return (
 		<ClerkProvider>
-			<html lang="en">
+			<html lang="ja">
 				<body>
 					<Header />
 					{children}
